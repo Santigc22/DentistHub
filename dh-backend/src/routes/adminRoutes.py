@@ -9,7 +9,17 @@ main = Blueprint('admin_blueprint', __name__)
 @main.route('/')
 def get_admins():
     try:
-        admins = AdminModel.get_admins()
+        name = request.args.get('name')
+        username = request.args.get('username')
+        cc = request.args.get('cc')
+        page = request.args.get('page')
+        page_size = request.args.get('page_size')
+        
+        page = int(page) if page else None
+        page_size = int(page_size) if page_size else None
+        cc = int(cc) if cc else None
+        
+        admins = AdminModel.get_admins(name=name, username=username, cc=cc, page=page, page_size=page_size)
         return jsonify(admins)
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500

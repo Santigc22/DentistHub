@@ -5,14 +5,40 @@ from .entities.Admin import Admin
 class AdminModel():
 
     @classmethod
-    def get_admins(self):
+    def get_admins(self, name=None, username=None, cc=None, page=None, page_size=None):
         try:
             connection = get_connection()
             admins = []
 
             with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT id_admin,name,username,cc,password FROM admin ORDER BY name ASC")
+                query = "SELECT id_admin, name, username, cc, password FROM admin WHERE 1=1"
+                conditions =[]
+                
+                if name:
+                    conditions.append("name = %s")
+                if username:
+                    conditions.append("username = %s")
+                if cc is not None:
+                    conditions.append("cc = %s")
+                    
+                if conditions:
+                    query += " AND " + " AND ".join(conditions)
+                    
+                query += " ORDER BY name ASC"
+                
+                print("Consulta SQL:", query)
+                
+                params = tuple(param for param  in (name, username, cc) if  param is not None)
+                
+                if page is not None and page_size is not None:
+                    offset = (page - 1) * page_size
+                    query += " LIMIT %s OFFSET %s"
+                    print("Parámetros:", params + (page_size, offset))
+                    cursor.execute(query, params + (page_size, offset))
+                else:
+                    print("Parámetros:", params)
+                    cursor.execute(query, params)
+                
                 resultset = cursor.fetchall()
 
                 for row in resultset:
@@ -48,6 +74,13 @@ class AdminModel():
     def add_admin(self, admin):
         try:
             connection = get_connection()
+            
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT username FROM admin WHERE username = %s", (admin.username,))
+                existing_username = cursor.fetchone()
+
+                if existing_username:
+                    raise ValueError("Username already exists")
 
             with connection.cursor() as cursor:
                 cursor.execute(
