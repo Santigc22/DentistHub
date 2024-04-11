@@ -116,6 +116,15 @@ class DoctorModel():
     def update_doctor(self, doctor):
         try:
             connection = get_connection()
+            
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id_doctor FROM doctor WHERE username = %s AND id_doctor != %s",
+                               (doctor.username, doctor.id_doctor))
+                existing_doctor = cursor.fetchone()
+
+            if existing_doctor:
+                raise ValueError("Username already exists for doctors")
+
 
             with connection.cursor() as cursor:
                 cursor.execute(

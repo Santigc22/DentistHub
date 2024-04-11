@@ -114,6 +114,14 @@ class AdminModel():
     def update_admin(self, admin):
         try:
             connection = get_connection()
+            
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id_admin FROM admin WHERE username = %s AND id_admin != %s", (admin.username, admin.id_admin))
+                existing_admin = cursor.fetchone()
+
+            if existing_admin:
+                raise ValueError("Username already exists for admins")
+
 
             with connection.cursor() as cursor:
                 cursor.execute(
