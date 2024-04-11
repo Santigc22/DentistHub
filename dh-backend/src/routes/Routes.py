@@ -317,15 +317,17 @@ def get_clients():
     try:
         name = request.args.get('name')
         cc = request.args.get('cc')
+        phone = request.args.get('phone')
         page = request.args.get('page')
         page_size = request.args.get('page_size')
 
         page = int(page) if page else None
         page_size = int(page_size) if page_size else None
         cc = int(cc) if cc else None
+        phone = int(phone) if phone else None
 
         clients = ClientModel.get_clients(
-            name=name, cc=cc, page=page, page_size=page_size)
+            name=name, cc=cc, phone=phone, page=page, page_size=page_size)
         return jsonify(clients)
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500

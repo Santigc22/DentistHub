@@ -5,7 +5,7 @@ from .entities.Client import Client
 class ClientModel():
 
     @classmethod
-    def get_clients(self, name=None, cc=None, page=None, page_size=None):
+    def get_clients(self, name=None, cc=None, phone=None, page=None, page_size=None):
         try:
             connection = get_connection()
             clients = []
@@ -18,6 +18,8 @@ class ClientModel():
                     conditions.append("name = %s")
                 if cc is not None:
                     conditions.append("cc = %s")
+                if phone is not None:
+                    conditions.append("phone = %s")
                     
                 if conditions:
                     query += " AND " + " AND ".join(conditions)
@@ -26,7 +28,7 @@ class ClientModel():
                 
                 print("Consulta SQL:", query)
                 
-                params = tuple(param for param  in (name, cc) if  param is not None)
+                params = tuple(param for param  in (name, cc, phone) if  param is not None)
                 
                 if page is not None and page_size is not None:
                     offset = (page - 1) * page_size
