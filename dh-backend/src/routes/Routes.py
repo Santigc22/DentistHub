@@ -3,9 +3,13 @@ from models.AdminModel import AdminModel
 from models.entities.Admin import Admin
 from models.DoctorModel import DoctorModel
 from models.entities.Doctor import Doctor
+from models.ProcedureModel import ProcedureModel
+from models.entities.Procedure import Procedure
 import uuid
 
 main = Blueprint('admin_blueprint', __name__)
+
+# Admin routes
 
 
 @main.route('/admins')
@@ -108,8 +112,8 @@ def update_admin(id_admin):
 
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
-    
-    
+
+
 # Doctor routes:
 
 @main.route('/doctors')
@@ -213,3 +217,93 @@ def update_doctor(id_doctor):
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
 
+# Procedure routes
+
+
+@main.route('/procedures')
+def get_procedures():
+    try:
+        procedures = ProcedureModel.get_procedures()
+        return jsonify(procedures)
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+
+
+@main.route('/procedures/<id_procedure>')
+def get_procedure(id_procedure):
+    try:
+        procedure = ProcedureModel.get_procedure(id_procedure)
+        if procedure != None:
+            return jsonify(procedure)
+        else:
+            return jsonify({'message': "entity not found"}), 404
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+
+
+@main.route('/procedures/addProcedure', methods=['POST'])
+def add_aprocedure():
+    try:
+
+        name = request.json['name']
+        amount = int(request.json['amount'])
+        description = request.json['description']
+
+        id_procedure = uuid.uuid4()
+        procedure = Procedure(str(id_procedure), name, amount, description)
+
+        affected_rows = ProcedureModel.add_procedure(procedure)
+
+        if affected_rows == 1:
+            response_data = {
+                "id_procedure": str(procedure.id_procedure)
+            }
+            return jsonify(response_data)
+        else:
+            return jsonify({'message': "Erroneous insertion"}), 400
+
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+
+
+@main.route('/procedures/deleteProcedure/<id_procedure>', methods=['DELETE'])
+def delete_procedure(id_procedure):
+    try:
+        procedure = Procedure(id_procedure)
+
+        affected_rows = ProcedureModel.delete_procedure(procedure)
+
+        if affected_rows == 1:
+            response_data = {
+                "deleted_Procedure": str(procedure.id_procedure)
+            }
+            return jsonify(response_data)
+        else:
+            return jsonify({'message': "No Procedure to delete"}), 404
+
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+
+
+@main.route('/procedures/updateProcedure/<id_procedure>', methods=['PUT'])
+def update_procedure(id_procedure):
+    try:
+
+        name = request.json['name']
+        amount = int(request.json['amount'])
+        description = request.json['description']
+
+        procedure = Procedure(id_procedure, name, amount, description)
+
+        affected_rows = ProcedureModel.update_procedure(procedure)
+
+        if affected_rows == 1:
+            response_data = {
+                "updated_Procedure": str(procedure.id_procedure)
+            }
+            return jsonify(response_data)
+        else:
+            return jsonify({'message': "No Procedure to update"}), 400
+
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
