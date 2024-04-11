@@ -1,35 +1,36 @@
 from database.db import get_connection
-from .entities.Admin import Admin
+from .entities.Doctor import Doctor
 
 
-class AdminModel():
+class DoctorModel():
 
     @classmethod
-    def get_admins(self, name=None, username=None, cc=None, page=None, page_size=None):
+    def get_doctors(self, name=None, username=None, cc=None, page=None, page_size=None):
         try:
             connection = get_connection()
-            admins = []
+            doctors = []
 
             with connection.cursor() as cursor:
-                query = "SELECT id_admin, name, username, cc, password FROM admin WHERE 1=1"
-                conditions =[]
-                
+                query = "SELECT id_doctor, name, username, cc, password FROM doctor WHERE 1=1"
+                conditions = []
+
                 if name:
                     conditions.append("name = %s")
                 if username:
                     conditions.append("username = %s")
                 if cc is not None:
                     conditions.append("cc = %s")
-                    
+
                 if conditions:
                     query += " AND " + " AND ".join(conditions)
-                    
+
                 query += " ORDER BY name ASC"
-                
+
                 print("Consulta SQL:", query)
-                
-                params = tuple(param for param  in (name, username, cc) if  param is not None)
-                
+
+                params = tuple(param for param in (
+                    name, username, cc) if param is not None)
+
                 if page is not None and page_size is not None:
                     offset = (page - 1) * page_size
                     query += " LIMIT %s OFFSET %s"
@@ -38,45 +39,46 @@ class AdminModel():
                 else:
                     print("Parámetros:", params)
                     cursor.execute(query, params)
-                
+
                 resultset = cursor.fetchall()
 
                 for row in resultset:
-                    admin = Admin(row[0], row[1], row[2], row[3], row[4])
-                    admins.append(admin.to_JSON())
+                    doctor = Doctor(row[0], row[1], row[2], row[3], row[4])
+                    doctors.append(doctor.to_JSON())
 
                 connection.close()
-                return admins
+                return doctors
         except Exception as ex:
             raise Exception(ex)
 
     @classmethod
-    def get_admin(self, id_admin):
+    def get_doctor(self, id_doctor):
         try:
             connection = get_connection()
 
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT id_admin,name,username,cc,password FROM admin WHERE id_admin = %s", (id_admin,))
+                    "SELECT id_doctor,name,username,cc,password FROM doctor WHERE id_doctor = %s", (id_doctor,))
                 row = cursor.fetchone()
 
-                admin = None
+                doctor = None
                 if row != None:
-                    admin = Admin(row[0], row[1], row[2], row[3], row[4])
-                    admin = admin.to_JSON()
+                    doctor = Doctor(row[0], row[1], row[2], row[3], row[4])
+                    doctor = doctor.to_JSON()
 
                     connection.close()
-                    return admin
+                    return doctor
         except Exception as ex:
             raise Exception(ex)
 
     @classmethod
-    def add_admin(self, admin):
+    def add_doctor(self, doctor):
         try:
             connection = get_connection()
-            
+
             with connection.cursor() as cursor:
-                cursor.execute("SELECT username FROM admin WHERE username = %s", (admin.username,))
+                cursor.execute(
+                    "SELECT username FROM doctor WHERE username = %s", (doctor.username,))
                 existing_username = cursor.fetchone()
 
                 if existing_username:
@@ -84,8 +86,8 @@ class AdminModel():
 
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "INSERT INTO admin (id_admin, name, username, cc, password) VALUES (%s, %s, %s, %s, %s)",
-                    (admin.id_admin, admin.name, admin.username, admin.cc, admin.password))
+                    "INSERT INTO doctor (id_doctor, name, username, cc, password) VALUES (%s, %s, %s, %s, %s)",
+                    (doctor.id_doctor, doctor.name, doctor.username, doctor.cc, doctor.password))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -93,15 +95,15 @@ class AdminModel():
                 return affected_rows
         except Exception as ex:
             raise Exception(ex)
-        
+
     @classmethod
-    def delete_admin(self, admin):
+    def delete_doctor(self, doctor):
         try:
             connection = get_connection()
 
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "DELETE FROM admin WHERE id_admin = %s", (admin.id_admin,))
+                    "DELETE FROM doctor WHERE id_doctor = %s", (doctor.id_doctor,))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -109,16 +111,16 @@ class AdminModel():
                 return affected_rows
         except Exception as ex:
             raise Exception(ex)
-        
+
     @classmethod
-    def update_admin(self, admin):
+    def update_doctor(self, doctor):
         try:
             connection = get_connection()
 
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "UPDATE admin SET name = %s, username = %s, cc = %s, password = %s WHERE id_admin = %s",
-                    (admin.name, admin.username, admin.cc, admin.password, admin.id_admin))
+                    "UPDATE doctor SET name = %s, username = %s, cc = %s, password = %s WHERE id_doctor = %s",
+                    (doctor.name, doctor.username, doctor.cc, doctor.password, doctor.id_doctor))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
