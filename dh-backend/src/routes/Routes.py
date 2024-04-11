@@ -5,6 +5,8 @@ from models.DoctorModel import DoctorModel
 from models.entities.Doctor import Doctor
 from models.ProcedureModel import ProcedureModel
 from models.entities.Procedure import Procedure
+from models.ClientModel import ClientModel
+from models.entities.Client import Client
 import uuid
 
 main = Blueprint('admin_blueprint', __name__)
@@ -304,6 +306,110 @@ def update_procedure(id_procedure):
             return jsonify(response_data)
         else:
             return jsonify({'message': "No Procedure to update"}), 400
+
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+    
+# Client routes
+
+@main.route('/clients')
+def get_clients():
+    try:
+        name = request.args.get('name')
+        cc = request.args.get('cc')
+        page = request.args.get('page')
+        page_size = request.args.get('page_size')
+
+        page = int(page) if page else None
+        page_size = int(page_size) if page_size else None
+        cc = int(cc) if cc else None
+
+        clients = ClientModel.get_clients(
+            name=name, cc=cc, page=page, page_size=page_size)
+        return jsonify(clients)
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+
+
+@main.route('/clients/<id_client>')
+def get_client(id_client):
+    try:
+        client = ClientModel.get_client(id_client)
+        if client != None:
+            return jsonify(client)
+        else:
+            return jsonify({'message': "entity not found"}), 404
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+
+
+@main.route('/clients/addClient', methods=['POST'])
+def add_client():
+    try:
+
+        name = request.json['name']
+        cc = int(request.json['cc'])
+        age = int(request.json['age'])
+        address = request.json['address']
+        phone = int(request.json['phone'])
+
+        id_client = uuid.uuid4()
+        client = Client(str(id_client), name, cc, age, address, phone)
+
+        affected_rows = ClientModel.add_client(client)
+
+        if affected_rows == 1:
+            response_data = {
+                "id_client": str(client.id_client)
+            }
+            return jsonify(response_data)
+        else:
+            return jsonify({'message': "Erroneous insertion"}), 400
+
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+
+
+@main.route('/clients/deleteClient/<id_client>', methods=['DELETE'])
+def delete_client(id_client):
+    try:
+        client = Client(id_client)
+
+        affected_rows = ClientModel.delete_client(client)
+
+        if affected_rows == 1:
+            response_data = {
+                "deleted_Client": str(client.id_client)
+            }
+            return jsonify(response_data)
+        else:
+            return jsonify({'message': "No Client to delete"}), 404
+
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+
+
+@main.route('/clients/updateClient/<id_client>', methods=['PUT'])
+def update_client(id_client):
+    try:
+
+        name = request.json['name']
+        cc = int(request.json['cc'])
+        age = int(request.json['age'])
+        address = request.json['address']
+        phone = int(request.json['phone'])
+
+        client = Client(id_client, name, cc, age, address, phone)
+
+        affected_rows = ClientModel.update_client(client)
+
+        if affected_rows == 1:
+            response_data = {
+                "updated_Client": str(client.id_client)
+            }
+            return jsonify(response_data)
+        else:
+            return jsonify({'message': "No Client to update"}), 400
 
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
