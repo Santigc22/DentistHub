@@ -114,6 +114,14 @@ class ClientModel():
     def update_client(self, client):
         try:
             connection = get_connection()
+            
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id_client FROM client WHERE cc = %s AND id_client != %s",
+                               (client.cc, client.id_client))
+                existing_client = cursor.fetchone()
+
+            if existing_client:
+                raise ValueError("Identification already exists for clients")
 
             with connection.cursor() as cursor:
                 cursor.execute(
