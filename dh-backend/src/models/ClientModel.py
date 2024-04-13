@@ -75,6 +75,11 @@ class ClientModel():
         try:
             connection = get_connection()
             
+            if len(client.name) > 50:
+                raise ValueError("Name must be 50 characters or less")
+            if len(client.address) > 50:
+                raise ValueError("Address must be 50 characters or less")
+            
             with connection.cursor() as cursor:
                 cursor.execute("SELECT cc FROM client WHERE cc = %s", (client.cc,))
                 existing_username = cursor.fetchone()
@@ -113,6 +118,11 @@ class ClientModel():
     @classmethod
     def update_client(self, client):
         try:
+            if len(client.name) > 50:
+                raise ValueError("Name exceeds the maximum length of 50 characters")
+            if len(client.address) > 50:
+                raise ValueError("Description exceeds the maximum length of 50 characters")
+            
             connection = get_connection()
             
             with connection.cursor() as cursor:

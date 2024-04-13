@@ -75,6 +75,13 @@ class AdminModel():
         try:
             connection = get_connection()
             
+            if len(admin.name) > 50:
+                raise ValueError("Name must be 50 characters or less")
+            if len(admin.username) > 30:
+                raise ValueError("Username must be 30 characters or less")
+            if len(admin.password) > 20:
+                raise ValueError("Password must be 20 characters or less")
+            
             with connection.cursor() as cursor:
                 cursor.execute("SELECT username FROM admin WHERE username = %s", (admin.username,))
                 existing_username = cursor.fetchone()
@@ -113,6 +120,13 @@ class AdminModel():
     @classmethod
     def update_admin(self, admin):
         try:
+            if len(admin.name) > 50:
+                raise ValueError("Name exceeds the maximum length of 50 characters")
+            if len(admin.username) > 30:
+                raise ValueError("Username exceeds the maximum length of 30 characters")
+            if len(admin.password) > 20:
+                raise ValueError("Password exceeds the maximum length of 20 characters")
+            
             connection = get_connection()
             
             with connection.cursor() as cursor:

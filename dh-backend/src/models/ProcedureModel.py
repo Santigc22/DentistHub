@@ -48,6 +48,11 @@ class ProcedureModel():
     def add_procedure(self, procedure):
         try:
             connection = get_connection()
+            
+            if len(procedure.name) > 50:
+                raise ValueError("Procedure name must be 50 characters or less")
+            if len(procedure.description) > 200:
+                raise ValueError("Procedure description must be 200 characters or less")
 
             with connection.cursor() as cursor:
                 cursor.execute("INSERT INTO procedure (id_procedure, name, amount, description) VALUES (%s, %s, %s, %s)",
@@ -63,6 +68,11 @@ class ProcedureModel():
     @classmethod
     def update_procedure(self, procedure):
         try:
+            if len(procedure.name) > 50:
+                raise ValueError("Name exceeds the maximum length of 50 characters")
+            if len(procedure.description) > 30:
+                raise ValueError("Description exceeds the maximum length of 200 characters")
+            
             connection = get_connection()
 
             with connection.cursor() as cursor:

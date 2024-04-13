@@ -75,6 +75,13 @@ class DoctorModel():
     def add_doctor(self, doctor):
         try:
             connection = get_connection()
+            
+            if len(doctor.name) > 50:
+                raise ValueError("Name must be 50 characters or less")
+            if len(doctor.username) > 30:
+                raise ValueError("Username must be 30 characters or less")
+            if len(doctor.password) > 20:
+                raise ValueError("Password must be 20 characters or less")
 
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -115,6 +122,13 @@ class DoctorModel():
     @classmethod
     def update_doctor(self, doctor):
         try:
+            if len(doctor.name) > 50:
+                raise ValueError("Name exceeds the maximum length of 50 characters")
+            if len(doctor.username) > 30:
+                raise ValueError("Username exceeds the maximum length of 30 characters")
+            if len(doctor.password) > 20:
+                raise ValueError("Password exceeds the maximum length of 20 characters")
+            
             connection = get_connection()
             
             with connection.cursor() as cursor:
