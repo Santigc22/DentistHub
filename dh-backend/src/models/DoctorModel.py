@@ -74,6 +74,13 @@ class DoctorModel():
     @classmethod
     def add_doctor(self, doctor):
         try:
+            if not isinstance(doctor.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(doctor.username, str):
+                raise ValueError("Username must be string type")
+            if not isinstance(doctor.password, str):
+                raise ValueError("Password must be string type")
+            
             connection = get_connection()
             
             if len(doctor.name) > 50:
@@ -122,6 +129,13 @@ class DoctorModel():
     @classmethod
     def update_doctor(self, doctor):
         try:
+            if not isinstance(doctor.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(doctor.username, str):
+                raise ValueError("Username must be string type")
+            if not isinstance(doctor.password, str):
+                raise ValueError("Password must be string type")
+            
             if len(doctor.name) > 50:
                 raise ValueError("Name exceeds the maximum length of 50 characters")
             if len(doctor.username) > 30:

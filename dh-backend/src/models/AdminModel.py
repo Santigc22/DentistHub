@@ -73,6 +73,14 @@ class AdminModel():
     @classmethod
     def add_admin(self, admin):
         try:
+            if not isinstance(admin.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(admin.username, str):
+                raise ValueError("Username must be string type")
+            if not isinstance(admin.password, str):
+                raise ValueError("Password must be string type")
+            
+            
             connection = get_connection()
             
             if len(admin.name) > 50:
@@ -120,6 +128,13 @@ class AdminModel():
     @classmethod
     def update_admin(self, admin):
         try:
+            if not isinstance(admin.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(admin.username, str):
+                raise ValueError("Username must be string type")
+            if not isinstance(admin.password, str):
+                raise ValueError("Password must be string type")
+            
             if len(admin.name) > 50:
                 raise ValueError("Name exceeds the maximum length of 50 characters")
             if len(admin.username) > 30:

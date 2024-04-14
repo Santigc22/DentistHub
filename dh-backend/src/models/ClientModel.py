@@ -73,6 +73,11 @@ class ClientModel():
     @classmethod
     def add_client(self, client):
         try:
+            if not isinstance(client.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(client.address, str):
+                raise ValueError("Address must be string type")
+            
             connection = get_connection()
             
             if len(client.name) > 50:
@@ -118,6 +123,11 @@ class ClientModel():
     @classmethod
     def update_client(self, client):
         try:
+            if not isinstance(client.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(client.address, str):
+                raise ValueError("Address must be string type")
+            
             if len(client.name) > 50:
                 raise ValueError("Name exceeds the maximum length of 50 characters")
             if len(client.address) > 50:

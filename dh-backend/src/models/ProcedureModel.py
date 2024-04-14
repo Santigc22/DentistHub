@@ -47,6 +47,11 @@ class ProcedureModel():
     @classmethod
     def add_procedure(self, procedure):
         try:
+            if not isinstance(procedure.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(procedure.description, str):
+                raise ValueError("Description must be string type")
+            
             connection = get_connection()
             
             if len(procedure.name) > 50:
@@ -68,6 +73,11 @@ class ProcedureModel():
     @classmethod
     def update_procedure(self, procedure):
         try:
+            if not isinstance(procedure.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(procedure.description, str):
+                raise ValueError("Description must be string type")
+            
             if len(procedure.name) > 50:
                 raise ValueError("Name exceeds the maximum length of 50 characters")
             if len(procedure.description) > 30:
