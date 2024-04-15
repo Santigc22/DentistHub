@@ -47,11 +47,35 @@ class ProcedureModel():
     @classmethod
     def add_procedure(self, procedure):
         try:
+            if not procedure.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not procedure.description.strip():
+                raise ValueError("Description cannot be empty")
+            if not procedure.amount:
+                raise ValueError("Amount cannot be empty")
+            
+            if not isinstance(procedure.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(procedure.description, str):
+                raise ValueError("Description must be string type")
+            
+            name = procedure.name.strip()
+            description = procedure.description.strip()
+            amount = procedure.amount
+            
+            if amount < 0:
+                raise ValueError("Amount must be non-negative value")
+            
             connection = get_connection()
+            
+            if len(name) > 50:
+                raise ValueError("Procedure name must be 50 characters or less")
+            if len(description) > 200:
+                raise ValueError("Procedure description must be 200 characters or less")
 
             with connection.cursor() as cursor:
                 cursor.execute("INSERT INTO procedure (id_procedure, name, amount, description) VALUES (%s, %s, %s, %s)",
-                               (procedure.id_procedure, procedure.name, procedure.amount, procedure.description))
+                               (procedure.id_procedure, name, amount, description))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -63,11 +87,35 @@ class ProcedureModel():
     @classmethod
     def update_procedure(self, procedure):
         try:
+            if not procedure.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not procedure.description.strip():
+                raise ValueError("Description cannot be empty")
+            if not procedure.amount:
+                raise ValueError("Amount cannot be empty")
+            
+            if not isinstance(procedure.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(procedure.description, str):
+                raise ValueError("Description must be string type")
+            
+            name = procedure.name.strip()
+            description = procedure.description.strip()
+            amount = procedure.amount
+            
+            if amount < 0:
+                raise ValueError("Amount must be non-negative value")
+            
+            if len(name) > 50:
+                raise ValueError("Name exceeds the maximum length of 50 characters")
+            if len(description) > 30:
+                raise ValueError("Description exceeds the maximum length of 200 characters")
+            
             connection = get_connection()
 
             with connection.cursor() as cursor:
                 cursor.execute("UPDATE procedure SET name = %s, amount = %s, description = %s WHERE id_procedure = %s", 
-                               (procedure.name, procedure.amount, procedure.description, procedure.id_procedure))
+                               (name, amount, description, procedure.id_procedure))
                 affected_rows = cursor.rowcount
                 connection.commit()
 

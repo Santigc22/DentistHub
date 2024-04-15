@@ -52,7 +52,10 @@ def add_admin():
 
         name = request.json['name']
         username = request.json['username']
-        cc = int(request.json['cc'])
+        cc = request.json['cc']
+        if not isinstance(cc, int) and not str(cc).isdigit():
+            raise ValueError("CC must be integer type")
+        cc = int(cc)
         password = request.json['password']
 
         id_admin = uuid.uuid4()
@@ -97,7 +100,10 @@ def update_admin(id_admin):
 
         name = request.json['name']
         username = request.json['username']
-        cc = int(request.json['cc'])
+        cc = request.json['cc']
+        if not isinstance(cc, int) and not str(cc).isdigit():
+            raise ValueError("CC must be integer type")
+        cc = int(cc)
         password = request.json['password']
 
         admin = Admin(id_admin, name, username, cc, password)
@@ -156,7 +162,10 @@ def add_doctor():
 
         name = request.json['name']
         username = request.json['username']
-        cc = int(request.json['cc'])
+        cc = request.json['cc']
+        if not isinstance(cc, int) and not str(cc).isdigit():
+            raise ValueError("CC must be integer type")
+        cc = int(cc)
         password = request.json['password']
 
         id_doctor = uuid.uuid4()
@@ -201,7 +210,10 @@ def update_doctor(id_doctor):
 
         name = request.json['name']
         username = request.json['username']
-        cc = int(request.json['cc'])
+        cc = request.json['cc']
+        if not isinstance(cc, int) and not str(cc).isdigit():
+            raise ValueError("CC must be integer type")
+        cc = int(cc)
         password = request.json['password']
 
         doctor = Doctor(id_doctor, name, username, cc, password)
@@ -248,7 +260,10 @@ def add_aprocedure():
     try:
 
         name = request.json['name']
-        amount = int(request.json['amount'])
+        amount = request.json['amount']
+        if not isinstance(amount, int) and not str(amount).isdigit():
+            raise ValueError("Amount must be integer type")
+        amount = int(amount)
         description = request.json['description']
 
         id_procedure = uuid.uuid4()
@@ -292,7 +307,10 @@ def update_procedure(id_procedure):
     try:
 
         name = request.json['name']
-        amount = int(request.json['amount'])
+        amount = request.json['amount']
+        if not isinstance(amount, int) and not str(amount).isdigit():
+            raise ValueError("Amount must be integer type")
+        amount = int(amount)
         description = request.json['description']
 
         procedure = Procedure(id_procedure, name, amount, description)
@@ -317,15 +335,17 @@ def get_clients():
     try:
         name = request.args.get('name')
         cc = request.args.get('cc')
+        phone = request.args.get('phone')
         page = request.args.get('page')
         page_size = request.args.get('page_size')
 
         page = int(page) if page else None
         page_size = int(page_size) if page_size else None
         cc = int(cc) if cc else None
+        phone = int(phone) if phone else None
 
         clients = ClientModel.get_clients(
-            name=name, cc=cc, page=page, page_size=page_size)
+            name=name, cc=cc, phone=phone, page=page, page_size=page_size)
         return jsonify(clients)
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
@@ -348,10 +368,19 @@ def add_client():
     try:
 
         name = request.json['name']
-        cc = int(request.json['cc'])
-        age = int(request.json['age'])
+        cc = request.json['cc']
+        if not isinstance(cc, int) and not str(cc).isdigit():
+            raise ValueError("CC must be integer type")
+        cc = int(cc)
+        age = request.json['age']
+        if not isinstance(age, int) and not str(age).isdigit():
+            raise ValueError("Age must be integer type")
+        age = int(age)
         address = request.json['address']
-        phone = int(request.json['phone'])
+        phone = request.json['phone']
+        if not isinstance(phone, int) and not str(phone).isdigit():
+            raise ValueError("Phone must be integer type")
+        phone = int(phone)
 
         id_client = uuid.uuid4()
         client = Client(str(id_client), name, cc, age, address, phone)
@@ -394,10 +423,19 @@ def update_client(id_client):
     try:
 
         name = request.json['name']
-        cc = int(request.json['cc'])
-        age = int(request.json['age'])
+        cc = request.json['cc']
+        if not isinstance(cc, int) and not str(cc).isdigit():
+            raise ValueError("CC must be integer type")
+        cc = int(cc)
+        age = request.json['age']
+        if not isinstance(age, int) and not str(age).isdigit():
+            raise ValueError("Age must be integer type")
+        age = int(age)
         address = request.json['address']
-        phone = int(request.json['phone'])
+        phone = request.json['phone']
+        if not isinstance(phone, int) and not str(phone).isdigit():
+            raise ValueError("Phone must be integer type")
+        phone = int(phone)
 
         client = Client(id_client, name, cc, age, address, phone)
 

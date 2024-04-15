@@ -1,6 +1,6 @@
 from database.db import get_connection
 from .entities.Admin import Admin
-
+import bcrypt # type: ignore
 
 class AdminModel():
 
@@ -73,10 +73,44 @@ class AdminModel():
     @classmethod
     def add_admin(self, admin):
         try:
+            if not admin.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not admin.username.strip():
+                raise ValueError("Username cannot be empty")
+            if not admin.password.strip():
+                raise ValueError("Password cannot be empty")
+            if not admin.cc:
+                raise ValueError("CC cannot be empty")
+            
+            if not isinstance(admin.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(admin.username, str):
+                raise ValueError("Username must be string type")
+            if not isinstance(admin.password, str):
+                raise ValueError("Password must be string type")
+            
+            name = admin.name.strip()
+            username = admin.username.strip()
+            password = admin.password.strip()
+            cc = admin.cc
+            
+            if cc < 0:
+                raise ValueError("CC must be non-negative value")
+            
+            
             connection = get_connection()
             
+            if len(name) > 50:
+                raise ValueError("Name must be 50 characters or less")
+            if len(username) > 30:
+                raise ValueError("Username must be 30 characters or less")
+            if len(password) > 20:
+                raise ValueError("Password must be 20 characters or less")
+            
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            
             with connection.cursor() as cursor:
-                cursor.execute("SELECT username FROM admin WHERE username = %s", (admin.username,))
+                cursor.execute("SELECT username FROM admin WHERE username = %s", (username,))
                 existing_username = cursor.fetchone()
 
                 if existing_username:
@@ -85,7 +119,7 @@ class AdminModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO admin (id_admin, name, username, cc, password) VALUES (%s, %s, %s, %s, %s)",
-                    (admin.id_admin, admin.name, admin.username, admin.cc, admin.password))
+                    (admin.id_admin, name, username, cc, hashed_password.decode('utf-8')))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -113,12 +147,54 @@ class AdminModel():
     @classmethod
     def update_admin(self, admin):
         try:
+            if not admin.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not admin.username.strip():
+                raise ValueError("Username cannot be empty")
+            if not admin.password.strip():
+                raise ValueError("Password cannot be empty")
+            if not admin.cc:
+                raise ValueError("CC cannot be empty")
+            
+            if not isinstance(admin.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(admin.username, str):
+                raise ValueError("Username must be string type")
+            if not isinstance(admin.password, str):
+                raise ValueError("Password must be string type")
+            
+            name = admin.name.strip()
+            username = admin.username.strip()
+            password = admin.password.strip()
+            cc = admin.cc
+            
+            if cc < 0:
+                raise ValueError("CC must be non-negative value")
+            
+            if len(name) > 50:
+                raise ValueError("Name exceeds the maximum length of 50 characters")
+            if len(username) > 30:
+                raise ValueError("Username exceeds the maximum length of 30 characters")
+            if len(password) > 20:
+                raise ValueError("Password exceeds the maximum length of 20 characters")
+            
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            
             connection = get_connection()
+            
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id_admin FROM admin WHERE username = %s AND id_admin != %s", 
+                               (username, admin.id_admin))
+                existing_admin = cursor.fetchone()
+
+            if existing_admin:
+                raise ValueError("Username already exists for admins")
+
 
             with connection.cursor() as cursor:
                 cursor.execute(
                     "UPDATE admin SET name = %s, username = %s, cc = %s, password = %s WHERE id_admin = %s",
-                    (admin.name, admin.username, admin.cc, admin.password, admin.id_admin))
+                    (name, username, cc, hashed_password.decode('utf-8'), admin.id_admin))
                 affected_rows = cursor.rowcount
                 connection.commit()
 

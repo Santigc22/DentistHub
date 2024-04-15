@@ -5,7 +5,7 @@ from .entities.Client import Client
 class ClientModel():
 
     @classmethod
-    def get_clients(self, name=None, cc=None, page=None, page_size=None):
+    def get_clients(self, name=None, cc=None, phone=None, page=None, page_size=None):
         try:
             connection = get_connection()
             clients = []
@@ -18,6 +18,8 @@ class ClientModel():
                     conditions.append("name = %s")
                 if cc is not None:
                     conditions.append("cc = %s")
+                if phone is not None:
+                    conditions.append("phone = %s")
                     
                 if conditions:
                     query += " AND " + " AND ".join(conditions)
@@ -26,7 +28,7 @@ class ClientModel():
                 
                 print("Consulta SQL:", query)
                 
-                params = tuple(param for param  in (name, cc) if  param is not None)
+                params = tuple(param for param  in (name, cc, phone) if  param is not None)
                 
                 if page is not None and page_size is not None:
                     offset = (page - 1) * page_size
@@ -71,10 +73,43 @@ class ClientModel():
     @classmethod
     def add_client(self, client):
         try:
+            if not client.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not client.cc:
+                raise ValueError("CC cannot be empty")
+            if not client.address.strip():
+                raise ValueError("Address cannot be empty")
+            if not client.age:
+                raise ValueError("Age cannot be empty")
+            if not client.phone:
+                raise ValueError("Phone cannot be empty")
+            
+            if not isinstance(client.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(client.address, str):
+                raise ValueError("Address must be string type")
+            
+            name = client.name.strip()
+            address = client.address.strip()
+            cc = client.cc
+            age = client.age
+            phone = client.phone
+            
+            if cc < 0 or age < 0 or phone < 0:
+                raise ValueError("CC, age and/or phone must be non-negative values")
+            
+            if age > 130:
+                raise ValueError("Age is not between our age limits (0-130)")
+            
             connection = get_connection()
             
+            if len(name) > 50:
+                raise ValueError("Name must be 50 characters or less")
+            if len(address) > 50:
+                raise ValueError("Address must be 50 characters or less")
+            
             with connection.cursor() as cursor:
-                cursor.execute("SELECT cc FROM client WHERE cc = %s", (client.cc,))
+                cursor.execute("SELECT cc FROM client WHERE cc = %s", (cc,))
                 existing_username = cursor.fetchone()
 
                 if existing_username:
@@ -83,7 +118,7 @@ class ClientModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO client (id_client, name, cc, age, address, phone) VALUES (%s, %s, %s, %s, %s, %s)",
-                    (client.id_client, client.name, client.cc, client.age, client.address, client.phone))
+                    (client.id_client, name, cc, age, address, phone))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -111,12 +146,53 @@ class ClientModel():
     @classmethod
     def update_client(self, client):
         try:
+            if not client.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not client.cc:
+                raise ValueError("CC cannot be empty")
+            if not client.address.strip():
+                raise ValueError("Address cannot be empty")
+            if not client.age:
+                raise ValueError("Age cannot be empty")
+            if not client.phone:
+                raise ValueError("Phone cannot be empty")
+            
+            if not isinstance(client.name, str):
+                raise ValueError("Name must be string type")
+            if not isinstance(client.address, str):
+                raise ValueError("Address must be string type")
+            
+            name = client.name.strip()
+            address = client.address.strip()
+            cc = client.cc
+            age = client.age
+            phone = client.phone
+            
+            if cc < 0 or age < 0 or phone < 0:
+                raise ValueError("CC, age and/or phone must be non-negative values")
+            
+            if age > 130:
+                raise ValueError("Age is not between our age limits (0-130)")
+            
+            if len(name) > 50:
+                raise ValueError("Name exceeds the maximum length of 50 characters")
+            if len(address) > 50:
+                raise ValueError("Description exceeds the maximum length of 50 characters")
+            
             connection = get_connection()
+            
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id_client FROM client WHERE cc = %s AND id_client != %s",
+                               (cc, client.id_client))
+                existing_client = cursor.fetchone()
+
+            if existing_client:
+                raise ValueError("Identification already exists for clients")
 
             with connection.cursor() as cursor:
                 cursor.execute(
                     "UPDATE client SET name = %s, cc = %s, age = %s, address = %s, phone = %s WHERE id_client = %s",
-                    (client.name, client.cc, client.age, client.address, client.phone, client.id_client))
+                    (name, cc, age, address, phone, client.id_client))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
