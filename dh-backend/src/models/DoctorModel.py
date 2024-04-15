@@ -74,6 +74,15 @@ class DoctorModel():
     @classmethod
     def add_doctor(self, doctor):
         try:
+            if not doctor.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not doctor.username.strip():
+                raise ValueError("Username cannot be empty")
+            if not doctor.password.strip():
+                raise ValueError("Password cannot be empty")
+            if not doctor.cc:
+                raise ValueError("CC cannot be empty")
+            
             if not isinstance(doctor.name, str):
                 raise ValueError("Name must be string type")
             if not isinstance(doctor.username, str):
@@ -137,6 +146,15 @@ class DoctorModel():
     @classmethod
     def update_doctor(self, doctor):
         try:
+            if not doctor.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not doctor.username.strip():
+                raise ValueError("Username cannot be empty")
+            if not doctor.password.strip():
+                raise ValueError("Password cannot be empty")
+            if not doctor.cc:
+                raise ValueError("CC cannot be empty")
+            
             if not isinstance(doctor.name, str):
                 raise ValueError("Name must be string type")
             if not isinstance(doctor.username, str):

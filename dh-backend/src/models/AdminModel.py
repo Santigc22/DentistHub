@@ -73,6 +73,15 @@ class AdminModel():
     @classmethod
     def add_admin(self, admin):
         try:
+            if not admin.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not admin.username.strip():
+                raise ValueError("Username cannot be empty")
+            if not admin.password.strip():
+                raise ValueError("Password cannot be empty")
+            if not admin.cc:
+                raise ValueError("CC cannot be empty")
+            
             if not isinstance(admin.name, str):
                 raise ValueError("Name must be string type")
             if not isinstance(admin.username, str):
@@ -136,6 +145,15 @@ class AdminModel():
     @classmethod
     def update_admin(self, admin):
         try:
+            if not admin.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not admin.username.strip():
+                raise ValueError("Username cannot be empty")
+            if not admin.password.strip():
+                raise ValueError("Password cannot be empty")
+            if not admin.cc:
+                raise ValueError("CC cannot be empty")
+            
             if not isinstance(admin.name, str):
                 raise ValueError("Name must be string type")
             if not isinstance(admin.username, str):

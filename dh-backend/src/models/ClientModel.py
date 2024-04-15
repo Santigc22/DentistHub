@@ -73,6 +73,17 @@ class ClientModel():
     @classmethod
     def add_client(self, client):
         try:
+            if not client.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not client.cc:
+                raise ValueError("CC cannot be empty")
+            if not client.address.strip():
+                raise ValueError("Address cannot be empty")
+            if not client.age:
+                raise ValueError("Age cannot be empty")
+            if not client.phone:
+                raise ValueError("Phone cannot be empty")
+            
             if not isinstance(client.name, str):
                 raise ValueError("Name must be string type")
             if not isinstance(client.address, str):
@@ -86,6 +97,9 @@ class ClientModel():
             
             if cc < 0 or age < 0 or phone < 0:
                 raise ValueError("CC, age and/or phone must be non-negative values")
+            
+            if age > 130:
+                raise ValueError("Age is not between our age limits (0-130)")
             
             connection = get_connection()
             
@@ -132,6 +146,17 @@ class ClientModel():
     @classmethod
     def update_client(self, client):
         try:
+            if not client.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not client.cc:
+                raise ValueError("CC cannot be empty")
+            if not client.address.strip():
+                raise ValueError("Address cannot be empty")
+            if not client.age:
+                raise ValueError("Age cannot be empty")
+            if not client.phone:
+                raise ValueError("Phone cannot be empty")
+            
             if not isinstance(client.name, str):
                 raise ValueError("Name must be string type")
             if not isinstance(client.address, str):
@@ -145,6 +170,9 @@ class ClientModel():
             
             if cc < 0 or age < 0 or phone < 0:
                 raise ValueError("CC, age and/or phone must be non-negative values")
+            
+            if age > 130:
+                raise ValueError("Age is not between our age limits (0-130)")
             
             if len(name) > 50:
                 raise ValueError("Name exceeds the maximum length of 50 characters")

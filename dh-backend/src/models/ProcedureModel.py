@@ -47,6 +47,13 @@ class ProcedureModel():
     @classmethod
     def add_procedure(self, procedure):
         try:
+            if not procedure.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not procedure.description.strip():
+                raise ValueError("Description cannot be empty")
+            if not procedure.amount:
+                raise ValueError("Amount cannot be empty")
+            
             if not isinstance(procedure.name, str):
                 raise ValueError("Name must be string type")
             if not isinstance(procedure.description, str):
@@ -80,6 +87,13 @@ class ProcedureModel():
     @classmethod
     def update_procedure(self, procedure):
         try:
+            if not procedure.name.strip():
+                raise ValueError("Name cannot be empty")
+            if not procedure.description.strip():
+                raise ValueError("Description cannot be empty")
+            if not procedure.amount:
+                raise ValueError("Amount cannot be empty")
+            
             if not isinstance(procedure.name, str):
                 raise ValueError("Name must be string type")
             if not isinstance(procedure.description, str):
