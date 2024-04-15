@@ -81,18 +81,26 @@ class DoctorModel():
             if not isinstance(doctor.password, str):
                 raise ValueError("Password must be string type")
             
+            name = doctor.name.strip()
+            username = doctor.username.strip()
+            password = doctor.password.strip()
+            cc = doctor.cc
+            
+            if cc < 0:
+                raise ValueError("CC must be non-negative value")
+            
             connection = get_connection()
             
-            if len(doctor.name) > 50:
+            if len(name) > 50:
                 raise ValueError("Name must be 50 characters or less")
-            if len(doctor.username) > 30:
+            if len(username) > 30:
                 raise ValueError("Username must be 30 characters or less")
-            if len(doctor.password) > 20:
+            if len(password) > 20:
                 raise ValueError("Password must be 20 characters or less")
 
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT username FROM doctor WHERE username = %s", (doctor.username,))
+                    "SELECT username FROM doctor WHERE username = %s", (username,))
                 existing_username = cursor.fetchone()
 
                 if existing_username:
@@ -101,7 +109,7 @@ class DoctorModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO doctor (id_doctor, name, username, cc, password) VALUES (%s, %s, %s, %s, %s)",
-                    (doctor.id_doctor, doctor.name, doctor.username, doctor.cc, doctor.password))
+                    (doctor.id_doctor, name, username, cc, password))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -136,18 +144,26 @@ class DoctorModel():
             if not isinstance(doctor.password, str):
                 raise ValueError("Password must be string type")
             
-            if len(doctor.name) > 50:
+            name = doctor.name.strip()
+            username = doctor.username.strip()
+            password = doctor.password.strip()
+            cc = doctor.cc
+            
+            if cc < 0:
+                raise ValueError("CC must be non-negative value")
+            
+            if len(name) > 50:
                 raise ValueError("Name exceeds the maximum length of 50 characters")
-            if len(doctor.username) > 30:
+            if len(username) > 30:
                 raise ValueError("Username exceeds the maximum length of 30 characters")
-            if len(doctor.password) > 20:
+            if len(password) > 20:
                 raise ValueError("Password exceeds the maximum length of 20 characters")
             
             connection = get_connection()
             
             with connection.cursor() as cursor:
                 cursor.execute("SELECT id_doctor FROM doctor WHERE username = %s AND id_doctor != %s",
-                               (doctor.username, doctor.id_doctor))
+                               (username, doctor.id_doctor))
                 existing_doctor = cursor.fetchone()
 
             if existing_doctor:
@@ -157,7 +173,7 @@ class DoctorModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "UPDATE doctor SET name = %s, username = %s, cc = %s, password = %s WHERE id_doctor = %s",
-                    (doctor.name, doctor.username, doctor.cc, doctor.password, doctor.id_doctor))
+                    (name, username, cc, password, doctor.id_doctor))
                 affected_rows = cursor.rowcount
                 connection.commit()
 

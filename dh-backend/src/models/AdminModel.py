@@ -80,18 +80,26 @@ class AdminModel():
             if not isinstance(admin.password, str):
                 raise ValueError("Password must be string type")
             
+            name = admin.name.strip()
+            username = admin.username.strip()
+            password = admin.password.strip()
+            cc = admin.cc
+            
+            if cc < 0:
+                raise ValueError("CC must be non-negative value")
+            
             
             connection = get_connection()
             
-            if len(admin.name) > 50:
+            if len(name) > 50:
                 raise ValueError("Name must be 50 characters or less")
-            if len(admin.username) > 30:
+            if len(username) > 30:
                 raise ValueError("Username must be 30 characters or less")
-            if len(admin.password) > 20:
+            if len(password) > 20:
                 raise ValueError("Password must be 20 characters or less")
             
             with connection.cursor() as cursor:
-                cursor.execute("SELECT username FROM admin WHERE username = %s", (admin.username,))
+                cursor.execute("SELECT username FROM admin WHERE username = %s", (username,))
                 existing_username = cursor.fetchone()
 
                 if existing_username:
@@ -100,7 +108,7 @@ class AdminModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO admin (id_admin, name, username, cc, password) VALUES (%s, %s, %s, %s, %s)",
-                    (admin.id_admin, admin.name, admin.username, admin.cc, admin.password))
+                    (admin.id_admin, name, username, cc, password))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -135,18 +143,26 @@ class AdminModel():
             if not isinstance(admin.password, str):
                 raise ValueError("Password must be string type")
             
-            if len(admin.name) > 50:
+            name = admin.name.strip()
+            username = admin.username.strip()
+            password = admin.password.strip()
+            cc = admin.cc
+            
+            if cc < 0:
+                raise ValueError("CC must be non-negative value")
+            
+            if len(name) > 50:
                 raise ValueError("Name exceeds the maximum length of 50 characters")
-            if len(admin.username) > 30:
+            if len(username) > 30:
                 raise ValueError("Username exceeds the maximum length of 30 characters")
-            if len(admin.password) > 20:
+            if len(password) > 20:
                 raise ValueError("Password exceeds the maximum length of 20 characters")
             
             connection = get_connection()
             
             with connection.cursor() as cursor:
                 cursor.execute("SELECT id_admin FROM admin WHERE username = %s AND id_admin != %s", 
-                               (admin.username, admin.id_admin))
+                               (username, admin.id_admin))
                 existing_admin = cursor.fetchone()
 
             if existing_admin:
@@ -156,7 +172,7 @@ class AdminModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "UPDATE admin SET name = %s, username = %s, cc = %s, password = %s WHERE id_admin = %s",
-                    (admin.name, admin.username, admin.cc, admin.password, admin.id_admin))
+                    (name, username, cc, password, admin.id_admin))
                 affected_rows = cursor.rowcount
                 connection.commit()
 

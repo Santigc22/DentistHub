@@ -78,15 +78,24 @@ class ClientModel():
             if not isinstance(client.address, str):
                 raise ValueError("Address must be string type")
             
+            name = client.name.strip()
+            address = client.address.strip()
+            cc = client.cc
+            age = client.age
+            phone = client.phone
+            
+            if cc < 0 or age < 0 or phone < 0:
+                raise ValueError("CC, age and/or phone must be non-negative values")
+            
             connection = get_connection()
             
-            if len(client.name) > 50:
+            if len(name) > 50:
                 raise ValueError("Name must be 50 characters or less")
-            if len(client.address) > 50:
+            if len(address) > 50:
                 raise ValueError("Address must be 50 characters or less")
             
             with connection.cursor() as cursor:
-                cursor.execute("SELECT cc FROM client WHERE cc = %s", (client.cc,))
+                cursor.execute("SELECT cc FROM client WHERE cc = %s", (cc,))
                 existing_username = cursor.fetchone()
 
                 if existing_username:
@@ -95,7 +104,7 @@ class ClientModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO client (id_client, name, cc, age, address, phone) VALUES (%s, %s, %s, %s, %s, %s)",
-                    (client.id_client, client.name, client.cc, client.age, client.address, client.phone))
+                    (client.id_client, name, cc, age, address, phone))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -128,16 +137,25 @@ class ClientModel():
             if not isinstance(client.address, str):
                 raise ValueError("Address must be string type")
             
-            if len(client.name) > 50:
+            name = client.name.strip()
+            address = client.address.strip()
+            cc = client.cc
+            age = client.age
+            phone = client.phone
+            
+            if cc < 0 or age < 0 or phone < 0:
+                raise ValueError("CC, age and/or phone must be non-negative values")
+            
+            if len(name) > 50:
                 raise ValueError("Name exceeds the maximum length of 50 characters")
-            if len(client.address) > 50:
+            if len(address) > 50:
                 raise ValueError("Description exceeds the maximum length of 50 characters")
             
             connection = get_connection()
             
             with connection.cursor() as cursor:
                 cursor.execute("SELECT id_client FROM client WHERE cc = %s AND id_client != %s",
-                               (client.cc, client.id_client))
+                               (cc, client.id_client))
                 existing_client = cursor.fetchone()
 
             if existing_client:
@@ -146,7 +164,7 @@ class ClientModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "UPDATE client SET name = %s, cc = %s, age = %s, address = %s, phone = %s WHERE id_client = %s",
-                    (client.name, client.cc, client.age, client.address, client.phone, client.id_client))
+                    (name, cc, age, address, phone, client.id_client))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
