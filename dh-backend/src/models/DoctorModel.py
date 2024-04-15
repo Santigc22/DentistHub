@@ -71,6 +71,27 @@ class DoctorModel():
                     return doctor
         except Exception as ex:
             raise Exception(ex)
+        
+    @classmethod
+    def get_doctor_by_username(self, username):
+        try:
+            connection = get_connection()
+
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id_doctor, name, username, cc, password FROM doctor WHERE username = %s", (username,))
+                row = cursor.fetchone()
+
+                if row is not None:
+                    doctor = Doctor(row[0], row[1], row[2], row[3], row[4])
+                    
+                    stored_password_hash = row[4].encode('utf-8')
+
+                    return doctor, stored_password_hash.decode('utf-8')
+                else:
+                    return None, None
+        except Exception as ex:
+            raise Exception(ex)
 
     @classmethod
     def add_doctor(self, doctor):

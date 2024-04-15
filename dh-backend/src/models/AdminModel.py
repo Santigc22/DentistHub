@@ -69,6 +69,27 @@ class AdminModel():
                     return admin
         except Exception as ex:
             raise Exception(ex)
+        
+    @classmethod
+    def get_admin_by_username(self, username):
+        try:
+            connection = get_connection()
+
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id_admin, name, username, cc, password FROM admin WHERE username = %s", (username,))
+                row = cursor.fetchone()
+
+                if row is not None:
+                    admin = Admin(row[0], row[1], row[2], row[3], row[4])
+                    
+                    stored_password_hash = row[4].encode('utf-8')
+
+                    return admin, stored_password_hash.decode('utf-8')
+                else:
+                    return None, None
+        except Exception as ex:
+            raise Exception(ex)
 
     @classmethod
     def add_admin(self, admin):
