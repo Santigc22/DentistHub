@@ -1,5 +1,6 @@
 from database.db import get_connection
 from .entities.Doctor import Doctor
+import bcrypt # type: ignore
 
 
 class DoctorModel():
@@ -106,6 +107,8 @@ class DoctorModel():
                 raise ValueError("Username must be 30 characters or less")
             if len(password) > 20:
                 raise ValueError("Password must be 20 characters or less")
+            
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -118,7 +121,7 @@ class DoctorModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO doctor (id_doctor, name, username, cc, password) VALUES (%s, %s, %s, %s, %s)",
-                    (doctor.id_doctor, name, username, cc, password))
+                    (doctor.id_doctor, name, username, cc, hashed_password.decode('utf-8')))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -177,6 +180,8 @@ class DoctorModel():
             if len(password) > 20:
                 raise ValueError("Password exceeds the maximum length of 20 characters")
             
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            
             connection = get_connection()
             
             with connection.cursor() as cursor:
@@ -191,7 +196,7 @@ class DoctorModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "UPDATE doctor SET name = %s, username = %s, cc = %s, password = %s WHERE id_doctor = %s",
-                    (name, username, cc, password, doctor.id_doctor))
+                    (name, username, cc, hashed_password.decode('utf-8'), doctor.id_doctor))
                 affected_rows = cursor.rowcount
                 connection.commit()
 

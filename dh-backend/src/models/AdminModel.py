@@ -1,6 +1,6 @@
 from database.db import get_connection
 from .entities.Admin import Admin
-
+import bcrypt # type: ignore
 
 class AdminModel():
 
@@ -107,6 +107,8 @@ class AdminModel():
             if len(password) > 20:
                 raise ValueError("Password must be 20 characters or less")
             
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            
             with connection.cursor() as cursor:
                 cursor.execute("SELECT username FROM admin WHERE username = %s", (username,))
                 existing_username = cursor.fetchone()
@@ -117,7 +119,7 @@ class AdminModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO admin (id_admin, name, username, cc, password) VALUES (%s, %s, %s, %s, %s)",
-                    (admin.id_admin, name, username, cc, password))
+                    (admin.id_admin, name, username, cc, hashed_password.decode('utf-8')))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -176,6 +178,8 @@ class AdminModel():
             if len(password) > 20:
                 raise ValueError("Password exceeds the maximum length of 20 characters")
             
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            
             connection = get_connection()
             
             with connection.cursor() as cursor:
@@ -190,7 +194,7 @@ class AdminModel():
             with connection.cursor() as cursor:
                 cursor.execute(
                     "UPDATE admin SET name = %s, username = %s, cc = %s, password = %s WHERE id_admin = %s",
-                    (name, username, cc, password, admin.id_admin))
+                    (name, username, cc, hashed_password.decode('utf-8'), admin.id_admin))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
