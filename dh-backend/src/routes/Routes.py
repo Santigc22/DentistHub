@@ -8,11 +8,27 @@ from models.entities.Procedure import Procedure
 from models.ClientModel import ClientModel
 from models.entities.Client import Client
 import uuid
+import bcrypt # type: ignore
 
 main = Blueprint('admin_blueprint', __name__)
 
 # Admin routes
 
+@main.route('/admins/loginAdmin', methods=['POST'])
+def login_admin():
+    try:
+        username = request.json['username']
+        password = request.json['password']
+
+        admin, stored_password_hash = AdminModel.get_admin_by_username(username)
+
+        if admin is not None and bcrypt.checkpw(password.encode('utf-8'), stored_password_hash.encode('utf-8')):
+            return jsonify({'message': 'Login successful'}), 200
+        else:
+            return jsonify({'message': 'Invalid credentials'}), 401
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+    
 
 @main.route('/admins')
 def get_admins():
@@ -123,6 +139,22 @@ def update_admin(id_admin):
 
 
 # Doctor routes:
+
+@main.route('/doctors/loginDoctor', methods=['POST'])
+def login_doctor():
+    try:
+        username = request.json['username']
+        password = request.json['password']
+
+        doctor, stored_password_hash = DoctorModel.get_doctor_by_username(username)
+
+        if doctor is not None and bcrypt.checkpw(password.encode('utf-8'), stored_password_hash.encode('utf-8')):
+            return jsonify({'message': 'Login successful'}), 200
+        else:
+            return jsonify({'message': 'Invalid credentials'}), 401
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
+    
 
 @main.route('/doctors')
 def get_doctors():
