@@ -4,7 +4,7 @@ class HomeView extends StatelessWidget {
   static String id = 'home_page_view';
   final String username;
 
-  const HomeView({Key? key, required this.username}) : super(key: key);
+  const HomeView({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
