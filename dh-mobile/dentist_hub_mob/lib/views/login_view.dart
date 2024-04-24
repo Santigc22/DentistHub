@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/function.dart';
-import 'dart:convert';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -10,6 +9,10 @@ class LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     const appTitle = 'Dentist Hub 🦷';
     final size = MediaQuery.of(context).size;
+    String username = '';
+    String password = '';
+    String serverIp = '192.168.1.46';
+    String loginURL = 'http://$serverIp:5000/dentisthub/api/admins/loginAdmin';
     return MaterialApp(
         title: appTitle,
         home: Scaffold(
@@ -37,7 +40,9 @@ class LoginView extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      username = value;
+                    },
                   ),
                 ),
                 Padding(
@@ -57,10 +62,24 @@ class LoginView extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      password = value;
+                    },
                   ),
                 ),
-                ElevatedButton(onPressed: () => {}, child: const Text('Login'))
+                ElevatedButton(
+                    onPressed: () {
+                      print('Se ha presionado el botón de inicio de sesión.');
+                      sendData(loginURL, username, password).then((response) {
+                        if (response != null) {
+                          print(
+                              'La solicitud fue exitosa. Respuesta del servidor: $response');
+                        } else {
+                          print(loginURL);
+                        }
+                      });
+                    },
+                    child: const Text('Login'))
               ],
             ),
           ),
