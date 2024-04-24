@@ -23,7 +23,7 @@ def login_admin():
         admin, stored_password_hash = AdminModel.get_admin_by_username(username)
 
         if admin is not None and bcrypt.checkpw(password.encode('utf-8'), stored_password_hash.encode('utf-8')):
-            return jsonify({'message': 'Login successful'}), 200
+            return jsonify({'message': 'Login successfully'}), 200
         else:
             return jsonify({'message': 'Invalid credentials'}), 401
     except Exception as ex:

@@ -1,3 +1,4 @@
+import 'package:dentist_hub_mob/views/home_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/function.dart';
 
@@ -72,10 +73,14 @@ class LoginView extends StatelessWidget {
                       print('Se ha presionado el botón de inicio de sesión.');
                       sendData(loginURL, username, password).then((response) {
                         if (response != null) {
-                          print(
-                              'La solicitud fue exitosa. Respuesta del servidor: $response');
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HomeView(username: username),
+                              ));
                         } else {
-                          print(loginURL);
+                          print(response);
                         }
                       });
                     },

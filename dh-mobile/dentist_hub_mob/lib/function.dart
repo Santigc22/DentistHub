@@ -10,6 +10,7 @@ Future<String?> sendData(String url, String username, String password) async {
     };
 
     String jsonData = jsonEncode(data);
+    String ok = "true";
 
     http.Response response = await http.post(
       Uri.parse(url),
@@ -20,7 +21,7 @@ Future<String?> sendData(String url, String username, String password) async {
     );
 
     if (response.statusCode == 200) {
-      return response.body;
+      return ok;
     } else {
       return null;
     }
