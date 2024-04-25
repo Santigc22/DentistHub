@@ -1,17 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:dentist_hub_mob/views/admins_view.dart';
+import 'package:dentist_hub_mob/views/home_page_view.dart';
+import 'package:dentist_hub_mob/function.dart';
 
-class HomeView extends StatelessWidget {
-  static String id = 'home_page_view';
-  final String username;
+class AdminsView extends StatefulWidget {
+  static String id = 'admins_view';
 
-  const HomeView({super.key, required this.username});
+  @override
+  _AdminsViewState createState() => _AdminsViewState();
+}
+
+class _AdminsViewState extends State<AdminsView> {
+  final String serverIp = '192.168.1.46';
+  final String GETAdminsURL = 'http://192.168.1.46:5000/dentisthub/api/admins';
+  late List<dynamic> admins = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData(GETAdminsURL).then((data) {
+      if (data != null) {
+        setState(() {
+          admins = data;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$username, welcome 🦷'),
+        title: const Text('Admins'),
         backgroundColor: const Color(0xFFCE93D8),
       ),
       drawer: Drawer(
@@ -32,17 +51,17 @@ class HomeView extends StatelessWidget {
             ),
             ListTile(
               title: const Text('Home'),
-              selected: ModalRoute.of(context)?.settings.name == HomeView.id,
-              selectedTileColor: Colors.lightBlue.withOpacity(0.5),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, HomeView.id);
               },
             ),
             ListTile(
               title: const Text('Admins'),
-              onTap: () async {
+              selected: ModalRoute.of(context)?.settings.name == AdminsView.id,
+              selectedTileColor: Colors.lightBlue.withOpacity(0.5),
+              onTap: () {
                 Navigator.pop(context);
-                await Future.delayed(const Duration(milliseconds: 100));
                 if (ModalRoute.of(context)?.settings.name != AdminsView.id) {
                   Navigator.pushReplacementNamed(context, AdminsView.id);
                 }
@@ -75,14 +94,35 @@ class HomeView extends StatelessWidget {
           ],
         ),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'You are in the Dentist Hub Home Page',
-              style: TextStyle(fontSize: 20, color: Color(0xFFCE93D8)),
-            )
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Admins',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataTable(
+              columns: const <DataColumn>[
+                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Username')),
+                DataColumn(label: Text('CC')),
+              ],
+              rows: admins.map((admin) {
+                return DataRow(
+                  cells: <DataCell>[
+                    DataCell(Text(admin['name'] ?? '')),
+                    DataCell(Text(admin['username'] ?? '')),
+                    DataCell(Text(admin['cc'].toString())),
+                  ],
+                );
+              }).toList(),
+            ),
           ],
         ),
       ),
