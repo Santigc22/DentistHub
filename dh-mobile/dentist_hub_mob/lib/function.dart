@@ -29,3 +29,16 @@ Future<String?> sendData(String url, String username, String password) async {
     return null;
   }
 }
+
+fetchData(String url) async {
+  try {
+    http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+}
