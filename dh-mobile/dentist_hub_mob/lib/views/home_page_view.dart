@@ -11,7 +11,7 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$username, welcome 🦷'),
+        title: Text('$username welcome 🦷'),
         backgroundColor: const Color(0xFFCE93D8),
       ),
       drawer: Drawer(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/views/login_view.dart';
 import 'package:dentist_hub_mob/views/home_page_view.dart';
 import 'package:dentist_hub_mob/views/admins_view.dart';
+import 'package:dentist_hub_mob/views/create_admin_view.dart';
 
 var customRoutes = <String, WidgetBuilder>{
   LoginView.id: (_) => const LoginView(),
@@ -10,5 +11,8 @@ var customRoutes = <String, WidgetBuilder>{
         ModalRoute.of(context)?.settings.arguments as String?;
     return HomeView(username: username ?? '');
   },
-  AdminsView.id: (_) => AdminsView()
+  AdminsView.id: (_) => AdminsView(),
+  CreateAdminView.id: (context) => CreateAdminView(
+        context: context,
+      )
 };

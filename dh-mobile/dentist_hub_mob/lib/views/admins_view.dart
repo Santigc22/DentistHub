@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/views/home_page_view.dart';
 import 'package:dentist_hub_mob/function.dart';
+import 'package:dentist_hub_mob/views/create_admin_view.dart';
+import 'package:flutter/widgets.dart';
 
 class AdminsView extends StatefulWidget {
   static String id = 'admins_view';
@@ -10,8 +12,8 @@ class AdminsView extends StatefulWidget {
 }
 
 class _AdminsViewState extends State<AdminsView> {
-  final String serverIp = '192.168.1.46';
-  final String GETAdminsURL = 'http://192.168.1.46:5000/dentisthub/api/admins';
+  final String serverIp = '192.168.1.13';
+  final String GETAdminsURL = 'http://192.168.1.13:5000/dentisthub/api/admins';
   late List<dynamic> admins = [];
 
   @override
@@ -107,24 +109,50 @@ class _AdminsViewState extends State<AdminsView> {
                 ),
               ),
             ),
-            DataTable(
-              columns: const <DataColumn>[
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Username')),
-                DataColumn(label: Text('CC')),
-              ],
-              rows: admins.map((admin) {
-                return DataRow(
-                  cells: <DataCell>[
-                    DataCell(Text(admin['name'] ?? '')),
-                    DataCell(Text(admin['username'] ?? '')),
-                    DataCell(Text(admin['cc'].toString())),
-                  ],
-                );
-              }).toList(),
-            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: const <DataColumn>[
+                  DataColumn(label: Text('Name')),
+                  DataColumn(label: Text('Username')),
+                  DataColumn(label: Text('CC')),
+                  DataColumn(label: Text('Actions')),
+                ],
+                rows: admins.map((admin) {
+                  return DataRow(
+                    cells: <DataCell>[
+                      DataCell(Text(admin['name'] ?? '')),
+                      DataCell(Text(admin['username'] ?? '')),
+                      DataCell(Text(admin['cc'].toString())),
+                      DataCell(Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              print('Edit admin');
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              print('Delete admin');
+                            },
+                          )
+                        ],
+                      ))
+                    ],
+                  );
+                }).toList(),
+              ),
+            )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, CreateAdminView.id);
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
