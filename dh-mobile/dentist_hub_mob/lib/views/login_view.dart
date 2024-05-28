@@ -12,7 +12,7 @@ class LoginView extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     String username = '';
     String password = '';
-    String serverIp = '192.168.1.13';
+    String serverIp = '192.168.1.46';
     String loginURL = 'http://$serverIp:5000/dentisthub/api/admins/loginAdmin';
     return MaterialApp(
         title: appTitle,

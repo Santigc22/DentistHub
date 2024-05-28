@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/views/home_page_view.dart';
 import 'package:dentist_hub_mob/function.dart';
 import 'package:dentist_hub_mob/views/create_admin_view.dart';
+import 'package:dentist_hub_mob/views/edit_admin_view.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
 
 class AdminsView extends StatefulWidget {
   static String id = 'admins_view';
@@ -12,8 +14,8 @@ class AdminsView extends StatefulWidget {
 }
 
 class _AdminsViewState extends State<AdminsView> {
-  final String serverIp = '192.168.1.13';
-  final String GETAdminsURL = 'http://192.168.1.13:5000/dentisthub/api/admins';
+  final String serverIp = '192.168.1.46';
+  final String GETAdminsURL = 'http://192.168.1.46:5000/dentisthub/api/admins';
   late List<dynamic> admins = [];
 
   @override
@@ -26,6 +28,25 @@ class _AdminsViewState extends State<AdminsView> {
         });
       }
     });
+  }
+
+  Future<void> deleteAdmin(String id) async {
+    final String deleteAdminURL =
+        'http://192.168.1.46:5000/dentisthub/api/admins/deleteAdmin/$id';
+    try {
+      final http.Response response =
+          await http.delete(Uri.parse(deleteAdminURL));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          admins.removeWhere((admin) => admin['id_admin'] == id);
+        });
+      } else {
+        print('Error al eliminar admin: ${response.body}');
+      }
+    } catch (e) {
+      print('Error de red al eliminar admin: $e');
+    }
   }
 
   @override
@@ -127,15 +148,49 @@ class _AdminsViewState extends State<AdminsView> {
                       DataCell(Row(
                         children: [
                           IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              print('Edit admin');
+                            icon: const Icon(Icons.edit),
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditAdminView(admin: admin),
+                                ),
+                              );
+                              if (result == true) {
+                                print('Yes');
+                              }
                             },
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              print('Delete admin');
+                            icon: const Icon(Icons.delete),
+                            onPressed: () async {
+                              bool confirmDelete = await showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Confirm delete'),
+                                      content: const Text(
+                                          'Are you sure you want to delete this admin?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(false);
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                          child: const Text('Delete'),
+                                        ),
+                                      ],
+                                    ),
+                                  ) ??
+                                  false;
+                              if (confirmDelete) {
+                                deleteAdmin(admin['id_admin']);
+                              }
                             },
                           )
                         ],
