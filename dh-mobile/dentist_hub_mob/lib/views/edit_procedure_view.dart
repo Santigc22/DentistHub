@@ -95,11 +95,11 @@ class _EditProcedureViewState extends State<EditProcedureView> {
             ),
             TextField(
               controller: amountController,
+              keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: 'Amount'),
             ),
             TextField(
               controller: descriptionController,
-              keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: 'Description'),
             ),
             ElevatedButton(

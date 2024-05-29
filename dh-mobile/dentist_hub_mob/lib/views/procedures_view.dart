@@ -1,5 +1,6 @@
 import 'package:dentist_hub_mob/views/create_procedure_view.dart';
 import 'package:dentist_hub_mob/views/edit_procedure_view.dart';
+import 'package:dentist_hub_mob/views/procedure_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/views/home_page_view.dart';
 import 'package:dentist_hub_mob/function.dart';
@@ -154,7 +155,21 @@ class _ProceduresViewState extends State<ProceduresView> {
                 rows: procedures.map((procedure) {
                   return DataRow(
                     cells: <DataCell>[
-                      DataCell(Text(procedure['name'] ?? '')),
+                      DataCell(InkWell(
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ProcedureDetailView(procedure: procedure),
+                            ),
+                          );
+                          if (result == true) {
+                            fetchData(GETProceduresURL);
+                          }
+                        },
+                        child: Text(procedure['name'] ?? ''),
+                      )),
                       DataCell(Text('\$${procedure['amount'].toString()}')),
                       DataCell(Row(
                         children: [
