@@ -5,6 +5,8 @@ import 'package:dentist_hub_mob/views/home_page_view.dart';
 import 'package:dentist_hub_mob/views/admins_view.dart';
 import 'package:dentist_hub_mob/views/create_admin_view.dart';
 import 'package:dentist_hub_mob/views/create_doctor_view.dart';
+import 'package:dentist_hub_mob/views/procedures_view.dart';
+import 'package:dentist_hub_mob/views/create_procedure_view.dart';
 
 var customRoutes = <String, WidgetBuilder>{
   LoginView.id: (_) => const LoginView(),
@@ -19,6 +21,10 @@ var customRoutes = <String, WidgetBuilder>{
       ),
   DoctorsView.id: (_) => DoctorsView(),
   CreateDoctorView.id: (context) => CreateDoctorView(
+        context: context,
+      ),
+  ProceduresView.id: (_) => ProceduresView(),
+  CreateProcedureView.id: (context) => CreateProcedureView(
         context: context,
       )
 };
