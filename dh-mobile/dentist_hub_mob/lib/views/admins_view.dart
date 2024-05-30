@@ -5,6 +5,7 @@ import 'package:dentist_hub_mob/function.dart';
 import 'package:dentist_hub_mob/views/create_admin_view.dart';
 import 'package:dentist_hub_mob/views/edit_admin_view.dart';
 import 'package:dentist_hub_mob/views/doctors_view.dart';
+import 'package:dentist_hub_mob/views/clients_view.dart';
 import 'package:http/http.dart' as http;
 
 class AdminsView extends StatefulWidget {
@@ -93,8 +94,12 @@ class _AdminsViewState extends State<AdminsView> {
             ),
             ListTile(
               title: const Text('Clients'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
+                await Future.delayed(const Duration(milliseconds: 100));
+                if (ModalRoute.of(context)?.settings.name != ClientsView.id) {
+                  Navigator.pushReplacementNamed(context, ClientsView.id);
+                }
               },
             ),
             ListTile(

@@ -1,0 +1,24 @@
+<h1>Appointments</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Client</th>
+      <th>Doctor</th>
+      <th>ID</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let appointment of appointments">
+      <td>{{ appointment.date }}</td>
+      <td>{{ appointment.client }}</td>
+      <td>{{ appointment.doctor }}</td>
+      <td>{{ appointment.id }}</td>
+      <td>
+        <button (click)="editAppointment(appointment.id)">Edit</button>
+        <button (click)="deleteAppointment(appointment.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

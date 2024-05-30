@@ -1,3 +1,4 @@
+import 'package:dentist_hub_mob/views/clients_view.dart';
 import 'package:dentist_hub_mob/views/doctors_view.dart';
 import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/views/admins_view.dart';
@@ -52,8 +53,12 @@ class HomeView extends StatelessWidget {
             ),
             ListTile(
               title: const Text('Clients'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
+                await Future.delayed(const Duration(milliseconds: 100));
+                if (ModalRoute.of(context)?.settings.name != ClientsView.id) {
+                  Navigator.pushReplacementNamed(context, ClientsView.id);
+                }
               },
             ),
             ListTile(

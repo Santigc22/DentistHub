@@ -1,25 +1,25 @@
-import 'package:dentist_hub_mob/views/edit_procedure_view.dart';
+import 'package:dentist_hub_mob/views/edit_client_view.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class ProcedureDetailView extends StatelessWidget {
-  final Map<String, dynamic> procedure;
+class ClientDetailView extends StatelessWidget {
+  final Map<String, dynamic> client;
   final String serverIp = '192.168.1.46';
 
-  ProcedureDetailView({required this.procedure, Key? key}) : super(key: key);
+  ClientDetailView({required this.client, Key? key}) : super(key: key);
 
-  Future<void> deleteProcedure(BuildContext context) async {
-    final String deleteProcedureURL =
-        'http://$serverIp:5000/dentisthub/api/procedures/${procedure['id_procedure']}';
+  Future<void> deleteClient(BuildContext context) async {
+    final String deleteClientURL =
+        'http://$serverIp:5000/dentisthub/api/clients/${client['id_client']}';
     try {
-      final response = await http.delete(Uri.parse(deleteProcedureURL));
+      final response = await http.delete(Uri.parse(deleteClientURL));
 
       if (response.statusCode == 200) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Procedure deleted'),
-            content: const Text('The procedure has been deleted successfully.'),
+            title: const Text('Client deleted'),
+            content: const Text('The Client has been deleted successfully.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -32,10 +32,10 @@ class ProcedureDetailView extends StatelessWidget {
           ),
         );
       } else {
-        print('Error al eliminar procedure: ${response.body}');
+        print('Error al eliminar client: ${response.body}');
       }
     } catch (e) {
-      print('Error de red al eliminar procedure: $e');
+      print('Error de red al eliminar client: $e');
     }
   }
 
@@ -43,7 +43,7 @@ class ProcedureDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Procedure  Details'),
+        title: const Text('Client  Details'),
         backgroundColor: const Color(0xFFCE93D8),
       ),
       body: Padding(
@@ -51,16 +51,20 @@ class ProcedureDetailView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Name: ${procedure['name']}',
+            Text('Name: ${client['name']}',
                 style: const TextStyle(fontSize: 18)),
             Text(' ', style: const TextStyle(fontSize: 18)),
-            Text('Amount: ${procedure['amount']}',
+            Text('CC: ${client['cc']}', style: const TextStyle(fontSize: 18)),
+            Text(' ', style: const TextStyle(fontSize: 18)),
+            Text('Age: ${client['age']}', style: const TextStyle(fontSize: 18)),
+            Text(' ', style: const TextStyle(fontSize: 18)),
+            Text('Phone: ${client['phone']}',
                 style: const TextStyle(fontSize: 18)),
             Text(' ', style: const TextStyle(fontSize: 18)),
-            Text('Description: ${procedure['description']}',
+            Text('Address: ${client['address']}',
                 style: const TextStyle(fontSize: 18)),
             Text(' ', style: const TextStyle(fontSize: 18)),
-            Text('ID: ${procedure['id_procedure']}',
+            Text('ID: ${client['id_client']}',
                 style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 20),
             Row(
@@ -71,8 +75,7 @@ class ProcedureDetailView extends StatelessWidget {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            EditProcedureView(procedure: procedure),
+                        builder: (context) => EditClientView(client: client),
                       ),
                     );
                     if (result == true) {
@@ -89,7 +92,7 @@ class ProcedureDetailView extends StatelessWidget {
                           builder: (context) => AlertDialog(
                             title: const Text('Confirm Delete'),
                             content: const Text(
-                                'Are you sure you want to delete this procedure?'),
+                                'Are you sure you want to delete this client?'),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -108,7 +111,7 @@ class ProcedureDetailView extends StatelessWidget {
                         ) ??
                         false;
                     if (confirmDelete) {
-                      deleteProcedure(procedure['id_procedure']);
+                      deleteClient(client['id_client']);
                     }
                   },
                   icon: const Icon(Icons.delete),

@@ -1,54 +1,55 @@
-import 'package:dentist_hub_mob/views/create_doctor_view.dart';
+import 'package:dentist_hub_mob/views/client_detail_view.dart';
+import 'package:dentist_hub_mob/views/create_client_view.dart';
+import 'package:dentist_hub_mob/views/edit_client_view.dart';
+import 'package:dentist_hub_mob/views/procedures_view.dart';
 import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/views/home_page_view.dart';
 import 'package:dentist_hub_mob/function.dart';
-import 'package:dentist_hub_mob/views/edit_doctor_view.dart';
+import 'package:dentist_hub_mob/views/doctors_view.dart';
 import 'package:dentist_hub_mob/views/admins_view.dart';
-import 'package:dentist_hub_mob/views/procedures_view.dart';
-import 'package:dentist_hub_mob/views/clients_view.dart';
 import 'package:http/http.dart' as http;
 
-class DoctorsView extends StatefulWidget {
-  static String id = 'doctors_view';
+class ClientsView extends StatefulWidget {
+  static String id = 'clients_view';
 
   @override
-  _DoctorsViewState createState() => _DoctorsViewState();
+  _ClientsViewState createState() => _ClientsViewState();
 }
 
-class _DoctorsViewState extends State<DoctorsView> {
+class _ClientsViewState extends State<ClientsView> {
   final String serverIp = '192.168.1.46';
-  final String GETDoctorsURL =
-      'http://192.168.1.46:5000/dentisthub/api/doctors';
-  late List<dynamic> doctors = [];
+  final String GETClientsURL =
+      'http://192.168.1.46:5000/dentisthub/api/clients';
+  late List<dynamic> clients = [];
 
   @override
   void initState() {
     super.initState();
-    fetchData(GETDoctorsURL).then((data) {
+    fetchData(GETClientsURL).then((data) {
       if (data != null) {
         setState(() {
-          doctors = data;
+          clients = data;
         });
       }
     });
   }
 
-  Future<void> deleteDoctor(String id) async {
-    final String deleteDoctorURL =
-        'http://192.168.1.46:5000/dentisthub/api/doctors/deleteDoctor/$id';
+  Future<void> deleteClient(String id) async {
+    final String deleteClientURL =
+        'http://192.168.1.46:5000/dentisthub/api/clients/deleteClient/$id';
     try {
       final http.Response response =
-          await http.delete(Uri.parse(deleteDoctorURL));
+          await http.delete(Uri.parse(deleteClientURL));
 
       if (response.statusCode == 200) {
         setState(() {
-          doctors.removeWhere((doctor) => doctor['id_doctor'] == id);
+          clients.removeWhere((client) => client['id_client'] == id);
         });
       } else {
-        print('Error al eliminar doctor: ${response.body}');
+        print('Error al eliminar client: ${response.body}');
       }
     } catch (e) {
-      print('Error de red al eliminar doctor: $e');
+      print('Error de red al eliminar client: $e');
     }
   }
 
@@ -56,7 +57,7 @@ class _DoctorsViewState extends State<DoctorsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Doctors 👨‍⚕️'),
+        title: const Text('Clients 👨‍💼'),
         backgroundColor: const Color(0xFFCE93D8),
       ),
       drawer: Drawer(
@@ -94,9 +95,10 @@ class _DoctorsViewState extends State<DoctorsView> {
             ),
             ListTile(
               title: const Text('Clients'),
-              onTap: () async {
+              selected: ModalRoute.of(context)?.settings.name == ClientsView.id,
+              selectedTileColor: Colors.lightBlue.withOpacity(0.5),
+              onTap: () {
                 Navigator.pop(context);
-                await Future.delayed(const Duration(milliseconds: 100));
                 if (ModalRoute.of(context)?.settings.name != ClientsView.id) {
                   Navigator.pushReplacementNamed(context, ClientsView.id);
                 }
@@ -115,9 +117,9 @@ class _DoctorsViewState extends State<DoctorsView> {
             ),
             ListTile(
               title: const Text('Doctors'),
-              selected: ModalRoute.of(context)?.settings.name == DoctorsView.id,
-              selectedTileColor: Colors.lightBlue.withOpacity(0.5),
-              onTap: () {
+              onTap: () async {
+                Navigator.pop(context);
+                await Future.delayed(const Duration(milliseconds: 100));
                 if (ModalRoute.of(context)?.settings.name != DoctorsView.id) {
                   Navigator.pushReplacementNamed(context, DoctorsView.id);
                 }
@@ -138,7 +140,7 @@ class _DoctorsViewState extends State<DoctorsView> {
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                'Doctors',
+                'Clients 👨‍💼',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -150,16 +152,28 @@ class _DoctorsViewState extends State<DoctorsView> {
               child: DataTable(
                 columns: const <DataColumn>[
                   DataColumn(label: Text('Name')),
-                  DataColumn(label: Text('Username')),
                   DataColumn(label: Text('CC')),
                   DataColumn(label: Text('Actions')),
                 ],
-                rows: doctors.map((doctor) {
+                rows: clients.map((client) {
                   return DataRow(
                     cells: <DataCell>[
-                      DataCell(Text(doctor['name'] ?? '')),
-                      DataCell(Text(doctor['username'] ?? '')),
-                      DataCell(Text(doctor['cc'].toString())),
+                      DataCell(InkWell(
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ClientDetailView(client: client),
+                            ),
+                          );
+                          if (result == true) {
+                            fetchData(GETClientsURL);
+                          }
+                        },
+                        child: Text(client['name'] ?? ''),
+                      )),
+                      DataCell(Text(client['cc'].toString())),
                       DataCell(Row(
                         children: [
                           IconButton(
@@ -169,7 +183,7 @@ class _DoctorsViewState extends State<DoctorsView> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      EditDoctorView(doctor: doctor),
+                                      EditClientView(client: client),
                                 ),
                               );
                               if (result == true) {
@@ -185,7 +199,7 @@ class _DoctorsViewState extends State<DoctorsView> {
                                     builder: (context) => AlertDialog(
                                       title: const Text('Confirm delete'),
                                       content: const Text(
-                                          'Are you sure you want to delete this doctor?'),
+                                          'Are you sure you want to delete this client?'),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
@@ -204,7 +218,7 @@ class _DoctorsViewState extends State<DoctorsView> {
                                   ) ??
                                   false;
                               if (confirmDelete) {
-                                deleteDoctor(doctor['id_doctor']);
+                                deleteClient(client['id_client']);
                               }
                             },
                           )
@@ -220,7 +234,7 @@ class _DoctorsViewState extends State<DoctorsView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, CreateDoctorView.id);
+          Navigator.pushNamed(context, CreateClientView.id);
         },
         child: const Icon(Icons.add),
       ),
