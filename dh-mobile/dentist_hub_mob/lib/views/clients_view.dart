@@ -1,53 +1,55 @@
+import 'package:dentist_hub_mob/views/client_detail_view.dart';
+import 'package:dentist_hub_mob/views/create_client_view.dart';
+import 'package:dentist_hub_mob/views/edit_client_view.dart';
 import 'package:dentist_hub_mob/views/procedures_view.dart';
 import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/views/home_page_view.dart';
 import 'package:dentist_hub_mob/function.dart';
-import 'package:dentist_hub_mob/views/create_admin_view.dart';
-import 'package:dentist_hub_mob/views/edit_admin_view.dart';
 import 'package:dentist_hub_mob/views/doctors_view.dart';
-import 'package:dentist_hub_mob/views/clients_view.dart';
+import 'package:dentist_hub_mob/views/admins_view.dart';
 import 'package:http/http.dart' as http;
 
-class AdminsView extends StatefulWidget {
-  static String id = 'admins_view';
+class ClientsView extends StatefulWidget {
+  static String id = 'clients_view';
 
   @override
-  _AdminsViewState createState() => _AdminsViewState();
+  _ClientsViewState createState() => _ClientsViewState();
 }
 
-class _AdminsViewState extends State<AdminsView> {
+class _ClientsViewState extends State<ClientsView> {
   final String serverIp = '192.168.1.46';
-  final String GETAdminsURL = 'http://192.168.1.46:5000/dentisthub/api/admins';
-  late List<dynamic> admins = [];
+  final String GETClientsURL =
+      'http://192.168.1.46:5000/dentisthub/api/clients';
+  late List<dynamic> clients = [];
 
   @override
   void initState() {
     super.initState();
-    fetchData(GETAdminsURL).then((data) {
+    fetchData(GETClientsURL).then((data) {
       if (data != null) {
         setState(() {
-          admins = data;
+          clients = data;
         });
       }
     });
   }
 
-  Future<void> deleteAdmin(String id) async {
-    final String deleteAdminURL =
-        'http://192.168.1.46:5000/dentisthub/api/admins/deleteAdmin/$id';
+  Future<void> deleteClient(String id) async {
+    final String deleteClientURL =
+        'http://192.168.1.46:5000/dentisthub/api/clients/deleteClient/$id';
     try {
       final http.Response response =
-          await http.delete(Uri.parse(deleteAdminURL));
+          await http.delete(Uri.parse(deleteClientURL));
 
       if (response.statusCode == 200) {
         setState(() {
-          admins.removeWhere((admin) => admin['id_admin'] == id);
+          clients.removeWhere((client) => client['id_client'] == id);
         });
       } else {
-        print('Error al eliminar admin: ${response.body}');
+        print('Error al eliminar client: ${response.body}');
       }
     } catch (e) {
-      print('Error de red al eliminar admin: $e');
+      print('Error de red al eliminar client: $e');
     }
   }
 
@@ -55,7 +57,7 @@ class _AdminsViewState extends State<AdminsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admins 👮'),
+        title: const Text('Clients 👨‍💼'),
         backgroundColor: const Color(0xFFCE93D8),
       ),
       drawer: Drawer(
@@ -83,10 +85,9 @@ class _AdminsViewState extends State<AdminsView> {
             ),
             ListTile(
               title: const Text('Admins'),
-              selected: ModalRoute.of(context)?.settings.name == AdminsView.id,
-              selectedTileColor: Colors.lightBlue.withOpacity(0.5),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
+                await Future.delayed(const Duration(milliseconds: 100));
                 if (ModalRoute.of(context)?.settings.name != AdminsView.id) {
                   Navigator.pushReplacementNamed(context, AdminsView.id);
                 }
@@ -94,9 +95,10 @@ class _AdminsViewState extends State<AdminsView> {
             ),
             ListTile(
               title: const Text('Clients'),
-              onTap: () async {
+              selected: ModalRoute.of(context)?.settings.name == ClientsView.id,
+              selectedTileColor: Colors.lightBlue.withOpacity(0.5),
+              onTap: () {
                 Navigator.pop(context);
-                await Future.delayed(const Duration(milliseconds: 100));
                 if (ModalRoute.of(context)?.settings.name != ClientsView.id) {
                   Navigator.pushReplacementNamed(context, ClientsView.id);
                 }
@@ -138,7 +140,7 @@ class _AdminsViewState extends State<AdminsView> {
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                'Admins',
+                'Clients 👨‍💼',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -150,16 +152,28 @@ class _AdminsViewState extends State<AdminsView> {
               child: DataTable(
                 columns: const <DataColumn>[
                   DataColumn(label: Text('Name')),
-                  DataColumn(label: Text('Username')),
                   DataColumn(label: Text('CC')),
                   DataColumn(label: Text('Actions')),
                 ],
-                rows: admins.map((admin) {
+                rows: clients.map((client) {
                   return DataRow(
                     cells: <DataCell>[
-                      DataCell(Text(admin['name'] ?? '')),
-                      DataCell(Text(admin['username'] ?? '')),
-                      DataCell(Text(admin['cc'].toString())),
+                      DataCell(InkWell(
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ClientDetailView(client: client),
+                            ),
+                          );
+                          if (result == true) {
+                            fetchData(GETClientsURL);
+                          }
+                        },
+                        child: Text(client['name'] ?? ''),
+                      )),
+                      DataCell(Text(client['cc'].toString())),
                       DataCell(Row(
                         children: [
                           IconButton(
@@ -169,7 +183,7 @@ class _AdminsViewState extends State<AdminsView> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      EditAdminView(admin: admin),
+                                      EditClientView(client: client),
                                 ),
                               );
                               if (result == true) {
@@ -185,7 +199,7 @@ class _AdminsViewState extends State<AdminsView> {
                                     builder: (context) => AlertDialog(
                                       title: const Text('Confirm delete'),
                                       content: const Text(
-                                          'Are you sure you want to delete this admin?'),
+                                          'Are you sure you want to delete this client?'),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
@@ -204,7 +218,7 @@ class _AdminsViewState extends State<AdminsView> {
                                   ) ??
                                   false;
                               if (confirmDelete) {
-                                deleteAdmin(admin['id_admin']);
+                                deleteClient(client['id_client']);
                               }
                             },
                           )
@@ -220,7 +234,7 @@ class _AdminsViewState extends State<AdminsView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, CreateAdminView.id);
+          Navigator.pushNamed(context, CreateClientView.id);
         },
         child: const Icon(Icons.add),
       ),

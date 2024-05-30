@@ -1,0 +1,22 @@
+<h1>Doctors</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>CC</th>
+      <th>ID</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let doctor of doctors">
+      <td>{{ doctor.name }}</td>
+      <td>{{ doctor.cc }}</td>
+      <td>{{ doctor.id }}</td>
+      <td>
+        <button (click)="editDoctor(doctor.id)">Edit</button>
+        <button (click)="deleteDoctor(doctor.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

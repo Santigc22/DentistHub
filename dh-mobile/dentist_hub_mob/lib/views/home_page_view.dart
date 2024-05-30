@@ -1,5 +1,8 @@
+import 'package:dentist_hub_mob/views/clients_view.dart';
+import 'package:dentist_hub_mob/views/doctors_view.dart';
 import 'package:flutter/material.dart';
 import 'package:dentist_hub_mob/views/admins_view.dart';
+import 'package:dentist_hub_mob/views/procedures_view.dart';
 
 class HomeView extends StatelessWidget {
   static String id = 'home_page_view';
@@ -11,7 +14,7 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$username, welcome 🦷'),
+        title: Text('$username welcome 🦷'),
         backgroundColor: const Color(0xFFCE93D8),
       ),
       drawer: Drawer(
@@ -50,20 +53,33 @@ class HomeView extends StatelessWidget {
             ),
             ListTile(
               title: const Text('Clients'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
+                await Future.delayed(const Duration(milliseconds: 100));
+                if (ModalRoute.of(context)?.settings.name != ClientsView.id) {
+                  Navigator.pushReplacementNamed(context, ClientsView.id);
+                }
               },
             ),
             ListTile(
               title: const Text('Procedures'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
+                await Future.delayed(const Duration(milliseconds: 100));
+                if (ModalRoute.of(context)?.settings.name !=
+                    ProceduresView.id) {
+                  Navigator.pushReplacementNamed(context, ProceduresView.id);
+                }
               },
             ),
             ListTile(
               title: const Text('Doctors'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
+                await Future.delayed(const Duration(milliseconds: 100));
+                if (ModalRoute.of(context)?.settings.name != DoctorsView.id) {
+                  Navigator.pushReplacementNamed(context, DoctorsView.id);
+                }
               },
             ),
             ListTile(

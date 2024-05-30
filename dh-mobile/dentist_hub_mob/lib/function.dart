@@ -42,3 +42,26 @@ fetchData(String url) async {
     return null;
   }
 }
+
+Future<String?> createAdmin(String url, Map<String, String> data) async {
+  try {
+    String jsonData = jsonEncode(data);
+    String ok = "true";
+
+    http.Response response = await http.post(
+      Uri.parse(url),
+      body: jsonData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return ok;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+}

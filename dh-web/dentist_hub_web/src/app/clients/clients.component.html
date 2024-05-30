@@ -1,0 +1,22 @@
+<h1>Clients</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>CC</th>
+      <th>ID</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let client of clients">
+      <td>{{ client.name }}</td>
+      <td>{{ client.cc }}</td>
+      <td>{{ client.id }}</td>
+      <td>
+        <button (click)="editClient(client.id)">Edit</button>
+        <button (click)="deleteClient(client.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
