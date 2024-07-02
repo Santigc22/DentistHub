@@ -57,8 +57,8 @@ class _EditDoctorViewState extends State<EditDoctorView> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Doctor actualizado'),
-            content: const Text('El Doctor ha sido actualizado exitosamente.'),
+            title: const Text('Doctor updated'),
+            content: const Text('The doctor has been updated successfully.'),
             actions: [
               TextButton(
                 onPressed: () {

@@ -57,9 +57,8 @@ class _EditAdminViewState extends State<EditAdminView> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Admin actualizado'),
-            content: const Text(
-                'El administrador ha sido actualizado exitosamente.'),
+            title: const Text('Admin updated'),
+            content: const Text('The admin has been updated successfully.'),
             actions: [
               TextButton(
                 onPressed: () {
